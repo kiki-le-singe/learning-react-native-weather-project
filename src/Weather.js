@@ -4,6 +4,7 @@ import React, {
   Text,
   View,
   TextInput,
+  Image,
 } from 'react-native';
 
 import Forecast from './components/Forecast';
@@ -77,6 +78,7 @@ export default class Weather extends Component {
 
     return (
       <View style={styles.container}>
+        <Image source={require('./assets/img/sky.jpg')} resizeMode="cover" style={styles.backdrop}>
           <View style={styles.overlay}>
             <View style={styles.row}>
               <Text style={styles.mainText}>
@@ -91,6 +93,7 @@ export default class Weather extends Component {
             </View>
             <Forecast main={main} description={description} temp={temp} />
           </View>
+        </Image>
       </View>
     );
   }
