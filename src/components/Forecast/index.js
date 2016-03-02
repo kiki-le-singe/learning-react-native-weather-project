@@ -37,7 +37,7 @@ export default class Weather extends Component {
         <Text style={styles.bigText}>
           {main}
         </Text>
-        <Text style={styles.bigText}>
+        <Text style={styles.mainText}>
           Current conditions: {description}
         </Text>
         <Text style={styles.bigText}>
