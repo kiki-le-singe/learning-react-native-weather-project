@@ -8,6 +8,7 @@ import React, {
 } from 'react-native';
 
 import Forecast from './components/Forecast';
+import config from './config';
 
 const baseFontSize = 16;
 const styles = StyleSheet.create({
@@ -58,24 +59,57 @@ export default class Weather extends Component {
 
     this.state = {
       zip: '',
-      forecast: {
-        main: 'Clouds',
-        description: 'few clouds',
-        temp: 45.7,
-      },
+      forecast: null,
     };
   }
 
   handleTextChange = e => {
-    console.log(e.nativeEvent.text);
+    const zip = e.nativeEvent.text;
 
-    this.setState({ zip: e.nativeEvent.text });
+    this.setState({ zip });
+
+    fetch(`http://api.openweathermap.org/data/2.5/weather?q=${zip}&units=imperial&appid=${config.appid}`)
+      .then(response => response.json())
+      .then(responseJSON => {
+        const { cod } = responseJSON;
+
+        if (cod === '404') {
+          return this.setState({
+            forecast: null,
+          });
+        }
+
+        const { weather, main } = responseJSON;
+        const [w] = weather;
+
+        return this.setState({
+          forecast: {
+            main: w.main,
+            description: w.description,
+            temp: main.temp,
+          },
+        });
+      })
+      .catch((error) => {
+        console.warn(error);
+      });
   };
 
-  render() {
+  renderForecast() {
     const { forecast } = this.state;
-    const { main, description, temp } = forecast;
 
+    if (forecast) {
+      const { main, description, temp } = forecast;
+
+      return (
+        <Forecast main={main} description={description} temp={temp} />
+      );
+    }
+
+    return null;
+  }
+
+  render() {
     return (
       <View style={styles.container}>
         <Image source={require('./assets/img/sky.jpg')} resizeMode="cover" style={styles.backdrop}>
@@ -91,7 +125,7 @@ export default class Weather extends Component {
                 />
               </View>
             </View>
-            <Forecast main={main} description={description} temp={temp} />
+            { this.renderForecast() }
           </View>
         </Image>
       </View>
