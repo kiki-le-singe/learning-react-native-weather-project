@@ -60,6 +60,7 @@ export default class Weather extends Component {
     this.state = {
       zip: '',
       forecast: null,
+      weatherImg: require('./assets/img/sky.jpg'),
     };
   }
 
@@ -81,13 +82,24 @@ export default class Weather extends Component {
 
         const { weather, main } = responseJSON;
         const [w] = weather;
+        const { main: weatherMain, description: weatherDescription } = w;
+        let weatherImg;
+
+        if (weatherMain === 'Rain') {
+          weatherImg = require('./assets/img/rain.jpg');
+        } else if (weatherMain === 'Snow') {
+          weatherImg = require('./assets/img/snow.jpg');
+        } else {
+          weatherImg = require('./assets/img/sky.jpg');
+        }
 
         return this.setState({
           forecast: {
-            main: w.main,
-            description: w.description,
+            main: weatherMain,
+            description: weatherDescription,
             temp: main.temp,
           },
+          weatherImg,
         });
       })
       .catch((error) => {
@@ -110,9 +122,11 @@ export default class Weather extends Component {
   }
 
   render() {
+    const { weatherImg } = this.state;
+
     return (
       <View style={styles.container}>
-        <Image source={require('./assets/img/sky.jpg')} resizeMode="cover" style={styles.backdrop}>
+        <Image source={weatherImg} resizeMode="cover" style={styles.backdrop}>
           <View style={styles.overlay}>
             <View style={styles.row}>
               <Text style={styles.mainText}>
